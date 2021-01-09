@@ -170,7 +170,7 @@ export class SteamAPI {
    * @param includePlayedFreeGames By default, free games like Team Fortress 2 are excluded (as technically everyone owns them). If include_played_free_games is set, they will be returned if the player has played them at some point. This is the same behavior as the games list on the Steam Community.
    * @param appidsFilter You can optionally filter the list to a set of appids.
    */
-  async GetOwnedGames(steamId: bigint, includeAppInfo: boolean, includePlayedFreeGames: boolean, ...appidsFilter: number[]): Promise<OwnedGames> {
+  async GetOwnedGames(steamId: bigint, includeAppInfo?: boolean, includePlayedFreeGames?: boolean, ...appidsFilter: number[]): Promise<OwnedGames> {
     let url: string = `${this.endPoint}/IPlayerService/GetOwnedGames/v0001/?&key=${this.apiKey}&steamid=${steamId}${
       includeAppInfo === true ? `&include_appinfo=1` : ''
     }${includePlayedFreeGames ? `&include_played_free_games=1` : ''}&format=${this.responseFormat}`
@@ -178,7 +178,6 @@ export class SteamAPI {
     let response: AxiosResponse<OwnedGames>
     try {
       response = await axios.get(url)
-      console.log(response.config.url)
       return {
         statusCode: response.status,
         statusText: response.statusText,
