@@ -20,7 +20,7 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install
-          npm run prepare-project-patch
+          npm run build
       - name: 🚀 Publish
         uses: JS-DevTools/npm-publish@v1
         with:
