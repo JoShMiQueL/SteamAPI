@@ -19,6 +19,6 @@ jobs:
           registry-url: https://registry.npmjs.org
       - name: 🚀 Publish
         run: npm publish --access public
-        working-directory: SteamAPI
+        working-directory: steamapi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
