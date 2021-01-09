@@ -11,7 +11,10 @@
   "scripts": {
     "build": "rimraf dist && mkdirp dist && rollup -c",
     "run": "npm run build && node src/test.js",
-    "docs": "rimraf docs && typedoc"
+    "docs": "rimraf docs && typedoc",
+    "prepare-project-patch": "npm run build && npm run docs && npm version patch",
+    "prepare-project-minor": "npm run build && npm run docs && npm version minor",
+    "prepare-project-major": "npm run build && npm run docs && npm version major"
   },
   "keywords": [
     "steam",

@@ -17,8 +17,9 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org
+      - run: npm install
+      - run: npm test
       - name: 🚀 Publish
-        run: npm publish --access public
-        working-directory: steamapi
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{secrets.NPM_AUTH_TOKEN}}
