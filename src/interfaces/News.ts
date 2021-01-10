@@ -1,7 +1,7 @@
 export interface News {
   statusCode: number
   statusText: string
-  appnews?: Appnews
+  data?: Appnews
 }
 
 interface Appnews {

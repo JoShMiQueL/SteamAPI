@@ -1,15 +1,14 @@
 export interface RecentlyPlayedGames {
   statusCode: number
   statusText: string
-  response?: Response
+  data?: Data
 }
-
-export interface Response {
+export interface Data {
   total_count: number
   games: Game[]
 }
 
-export interface Game {
+interface Game {
   appid: number
   name: string
   playtime_2weeks: number

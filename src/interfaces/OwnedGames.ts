@@ -1,7 +1,7 @@
 export interface OwnedGames {
   statusCode: number
   statusText: string
-  response?: Response
+  data?: Response
 }
 
 export interface Response {

@@ -1,7 +1,7 @@
 export interface PlayerAchievements {
   statusCode: number
   statusText: string
-  playerstats?: Playerstats
+  data?: Playerstats
 }
 
 export interface Playerstats {

@@ -1,7 +1,7 @@
 export interface UserStats {
   statusCode: number
   statusText: string
-  playerstats?: Playerstats
+  data?: Playerstats
 }
 
 export interface Playerstats {

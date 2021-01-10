@@ -1,7 +1,7 @@
 export interface Friends {
   statusCode: number
   statusText: string
-  friendslist?: Friendslist
+  data?: Friendslist
 }
 
 interface Friendslist {

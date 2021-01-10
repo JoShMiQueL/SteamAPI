@@ -1,7 +1,7 @@
 export interface GlobalAchievement {
   statusCode: number
   statusText: string
-  achievementpercentages?: Achievementpercentages
+  data?: Achievementpercentages
 }
 
 interface Achievementpercentages {

@@ -1,7 +1,7 @@
 export interface PlayerSummaries {
   statusCode: number
   statusText: string
-  response?: Response
+  data?: Response
 }
 
 interface Response {

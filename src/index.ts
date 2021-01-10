@@ -5,9 +5,10 @@ import { News } from './interfaces/News'
 import { OwnedGames } from './interfaces/OwnedGames'
 import { PlayerAchievements } from './interfaces/PlayerAchievements'
 import { PlayerSummaries } from './interfaces/PlayerSummaries'
-import { RecentlyPlayedGames } from './interfaces/RecentlyPlayedGames'
+import * as RecentlyPlayedGames from './interfaces/RecentlyPlayedGames'
 import { ResponseFormat } from './interfaces/ResponseFormat'
 import { UserStats } from './interfaces/UserStats'
+import * as AppDetails from './interfaces/AppDetails'
 
 export class SteamAPI {
   private apiKey: string
@@ -27,18 +28,50 @@ export class SteamAPI {
   /**
    *
    * @param appId AppID of the game you want the news of.
+   */
+  async GetAppDetails(appId: number): Promise<AppDetails.AppDetails> {
+    const url = `https://store.steampowered.com/api/appdetails?appids=${appId}`
+    let steamApiResponse: AxiosResponse
+    try {
+      steamApiResponse = await axios.get(url)
+      if (steamApiResponse.data[appId].data !== undefined) {
+        return {
+          statusCode: steamApiResponse.status,
+          statusText: steamApiResponse.statusText,
+          success: steamApiResponse.data[appId].success,
+          data: steamApiResponse.data[appId].data
+        }
+      } else {
+        return {
+          statusCode: steamApiResponse.status,
+          statusText: steamApiResponse.statusText,
+          success: steamApiResponse.data[appId].success
+        }
+      }
+    } catch (error) {
+      console.log(error.response.config.url)
+      return {
+        statusCode: error.response.status,
+        statusText: error.response.statusText
+      }
+    }
+  }
+
+  /**
+   *
+   * @param appId AppID of the game you want the news of.
    * @param count How many news enties you want to get returned.
    * @param maxlength Maximum length of each news entry.
    */
   async GetNewsForApp(appId: number, count: number = 3, maxlength: number = 300): Promise<News> {
     const url = `${this.endPoint}/ISteamNews/GetNewsForApp/v0002/?appid=${appId}&count=${count}&maxlength=${maxlength}&format=${this.responseFormat}`
-    let response: AxiosResponse<News>
+    let steamApiResponse: AxiosResponse
     try {
-      response = await axios.get(url)
+      steamApiResponse = await axios.get(url)
       return {
-        statusCode: response.status,
-        statusText: response.statusText,
-        appnews: response.data.appnews
+        statusCode: steamApiResponse.status,
+        statusText: steamApiResponse.statusText,
+        data: steamApiResponse.data.appnews
       }
     } catch (error) {
       return {
@@ -54,13 +87,13 @@ export class SteamAPI {
    */
   async GetGlobalAchievementPercentagesForApp(gameId: number): Promise<GlobalAchievement> {
     const url = `${this.endPoint}/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/?gameid=${gameId}&format=${this.responseFormat}`
-    let response: AxiosResponse<GlobalAchievement>
+    let steamApiResponse: AxiosResponse
     try {
-      response = await axios.get(url)
+      steamApiResponse = await axios.get(url)
       return {
-        statusCode: response.status,
-        statusText: response.statusText,
-        achievementpercentages: response.data.achievementpercentages
+        statusCode: steamApiResponse.status,
+        statusText: steamApiResponse.statusText,
+        data: steamApiResponse.data.achievementpercentages.achievements
       }
     } catch (error) {
       return {
@@ -76,13 +109,13 @@ export class SteamAPI {
    */
   async GetPlayerSummaries(...steamIds: bigint[]): Promise<PlayerSummaries> {
     const url = `${this.endPoint}/ISteamUser/GetPlayerSummaries/v0002/?key=${this.apiKey}&steamids=${steamIds}&format=${this.responseFormat}`
-    let response: AxiosResponse<PlayerSummaries>
+    let steamApiResponse: AxiosResponse
     try {
-      response = await axios.get(url)
+      steamApiResponse = await axios.get(url)
       return {
-        statusCode: response.status,
-        statusText: response.statusText,
-        response: response.data.response
+        statusCode: steamApiResponse.status,
+        statusText: steamApiResponse.statusText,
+        data: steamApiResponse.data.response.players
       }
     } catch (error) {
       return {
@@ -99,13 +132,13 @@ export class SteamAPI {
    */
   async GetFriendList(steamId: bigint, relationship: Friend['relationship'] = 'friend'): Promise<Friends> {
     const url = `${this.endPoint}/ISteamUser/GetFriendList/v0001/?key=${this.apiKey}&steamid=${steamId}&relationship=${relationship}&format=${this.responseFormat}`
-    let response: AxiosResponse<Friends>
+    let steamApiResponse: AxiosResponse
     try {
-      response = await axios.get(url)
+      steamApiResponse = await axios.get(url)
       return {
-        statusCode: response.status,
-        statusText: response.statusText,
-        friendslist: response.data.friendslist
+        statusCode: steamApiResponse.status,
+        statusText: steamApiResponse.statusText,
+        data: steamApiResponse.data.friendslist.friends
       }
     } catch (error) {
       return {
@@ -123,13 +156,14 @@ export class SteamAPI {
    */
   async GetPlayerAchievements(steamId: bigint, appId: number, language: string = 'us'): Promise<PlayerAchievements> {
     const url = `${this.endPoint}/ISteamUserStats/GetPlayerAchievements/v0001/?appid=${appId}&key=${this.apiKey}&steamid=${steamId}&l=${language}&format=${this.responseFormat}`
-    let response: AxiosResponse<PlayerAchievements>
+    let steamApiResponse: AxiosResponse
     try {
-      response = await axios.get(url)
+      steamApiResponse = await axios.get(url)
+      delete steamApiResponse.data.playerstats.success
       return {
-        statusCode: response.status,
-        statusText: response.statusText,
-        playerstats: response.data.playerstats
+        statusCode: steamApiResponse.status,
+        statusText: steamApiResponse.statusText,
+        data: steamApiResponse.data.playerstats
       }
     } catch (error) {
       return {
@@ -147,13 +181,13 @@ export class SteamAPI {
    */
   async GetUserStatsForGame(steamId: bigint, appId: number, language: string = 'us'): Promise<UserStats> {
     const url = `${this.endPoint}/ISteamUserStats/GetUserStatsForGame/v0002/?appid=${appId}&key=${this.apiKey}&steamid=${steamId}&l=${language}&format=${this.responseFormat}`
-    let response: AxiosResponse<UserStats>
+    let steamApiResponse: AxiosResponse
     try {
-      response = await axios.get(url)
+      steamApiResponse = await axios.get(url)
       return {
-        statusCode: response.status,
-        statusText: response.statusText,
-        playerstats: response.data.playerstats
+        statusCode: steamApiResponse.status,
+        statusText: steamApiResponse.statusText,
+        data: steamApiResponse.data.playerstats
       }
     } catch (error) {
       return {
@@ -175,13 +209,13 @@ export class SteamAPI {
       includeAppInfo === true ? `&include_appinfo=1` : ''
     }${includePlayedFreeGames ? `&include_played_free_games=1` : ''}&format=${this.responseFormat}`
     appidsFilter ? appidsFilter.forEach((v, i) => (url = `${url}&appids_filter[${i}]=${v}`)) : ''
-    let response: AxiosResponse<OwnedGames>
+    let steamApiResponse: AxiosResponse
     try {
-      response = await axios.get(url)
+      steamApiResponse = await axios.get(url)
       return {
-        statusCode: response.status,
-        statusText: response.statusText,
-        response: response.data.response
+        statusCode: steamApiResponse.status,
+        statusText: steamApiResponse.statusText,
+        data: steamApiResponse.data.response
       }
     } catch (error) {
       return {
@@ -196,17 +230,17 @@ export class SteamAPI {
    * @param steamId The SteamID of the account.
    * @param count Optionally limit to a certain number of games (the number of games a person has played in the last 2 weeks is typically very small)
    */
-  async GetRecentlyPlayedGames(steamId: bigint, count?: number): Promise<RecentlyPlayedGames> {
+  async GetRecentlyPlayedGames(steamId: bigint, count?: number): Promise<RecentlyPlayedGames.RecentlyPlayedGames> {
     const url = `${this.endPoint}/IPlayerService/GetRecentlyPlayedGames/v0001/?&key=${this.apiKey}&steamid=${steamId}${count && `&count=${count}`}&format=${
       this.responseFormat
     }`
-    let response: AxiosResponse<RecentlyPlayedGames>
+    let steamApiResponse: AxiosResponse
     try {
-      response = await axios.get(url)
+      steamApiResponse = await axios.get(url)
       return {
-        statusCode: response.status,
-        statusText: response.statusText,
-        response: response.data.response
+        statusCode: steamApiResponse.status,
+        statusText: steamApiResponse.statusText,
+        data: steamApiResponse.data.response
       }
     } catch (error) {
       return {
